@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>Web服务器CGI安全——由一次信息安全竞赛引发的思考 | 0xe799bde88f9c</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="别忘了关掉cgi-bin，这个功能很危险。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Web服务器CGI安全——由一次信息安全竞赛引发的思考">
+<meta property="og:url" content="https://www.summershrimp.com/2014/12/cgi-default-insecure/index.html">
+<meta property="og:site_name" content="0xe799bde88f9c">
+<meta property="og:description" content="别忘了关掉cgi-bin，这个功能很危险。">
+<meta property="og:locale">
+<meta property="article:published_time" content="2014-12-03T20:22:42.000Z">
+<meta property="article:modified_time" content="2021-03-12T09:32:07.303Z">
+<meta property="article:author" content="Yibai Zhang">
+<meta property="article:tag" content="Apache">
+<meta property="article:tag" content="CGI">
+<meta property="article:tag" content="安全">
+<meta property="article:tag" content="服务器">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="0xe799bde88f9c" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 5.2.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">0xe799bde88f9c</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://www.summershrimp.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-Web服务器CGI安全——由一次信息安全竞赛引发的思考" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2014/12/cgi-default-insecure/" class="article-date">
+  <time datetime="2014-12-03T20:22:42.000Z" itemprop="datePublished">2014-12-04</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Server-Side/">Server-Side</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Web服务器CGI安全——由一次信息安全竞赛引发的思考
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>别忘了关掉cgi-bin，这个功能很危险。 </p>
+<a id="more"></a>
+
+<p>201x年1x月2x日，我们团队在一次信息安全的决赛中，拿下了一台Windows+wamp的主机。但是该主机在php.ini中限制了所有跟执行有关的函数，如system, popen等，因此，无法使用webshell正常运行系统命令，更无法运行上传的后门。而题目中有一个得分点是得到服务器中安装的360杀毒中白名单文件名。该服务器的远程桌面是打开的但是端口是在1433监听的（默认应为3389）。我们的扫描器在扫描时没有打开协议枚举</p>
+<pre># nmap -A</pre>
+
+<p>因此我们对1433端口判断错误。于是思路转为绕过PHP系统执行限制（本题目的官方思路应为使用webshell拿下SAM文件，然后gethash后字典破解，使用mstsc远程进入桌面）。</p>
+<p>在exploit-db中发现一个php5.x通过shellshock漏洞绕过函数限制的利用</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># searchsploit php bypass</span><br><span class="line">...</span><br><span class="line">PHP 5.x Shellshock Exploit (bypass disable_f | &#x2F;php&#x2F;webapps&#x2F;35146.txt</span><br></pre></td></tr></table></figure>
+
+<p>但是此漏洞仅能从Linux服务器上成功执行。我们在这里卡住了。</p>
+<p>后来猛然想起Apache无论是在Wamp中还是在Linux发行版中，CGI程序执行默认都是打开的！于是上传后门和利用脚本到cgi-bin中：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">start backdoor.exe</span><br><span class="line">echo Started...</span><br></pre></td></tr></table></figure>
+
+<p>然后在浏览器中访问<a target="_blank" rel="noopener" href="http://xxx.xxx.xxx.xxx/cgi-bin/start.bat%EF%BC%8C%E7%AD%89%E5%BE%85%E7%89%87%E5%88%BB%EF%BC%8C%E7%9B%AE%E6%A0%87%E6%9C%BA%E5%99%A8%E6%88%90%E5%8A%9F%E4%B8%8A%E7%BA%BF%E3%80%82">http://xxx.xxx.xxx.xxx/cgi-bin/start.bat，等待片刻，目标机器成功上线。</a></p>
+<p>附上WAMP2.4版默认apache配置文件片段</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line">#LoadModule cache_module modules&#x2F;mod_cache.so</span><br><span class="line">#LoadModule cache_disk_module modules&#x2F;mod_cache_disk.so</span><br><span class="line">#LoadModule cern_meta_module modules&#x2F;mod_cern_meta.so</span><br><span class="line">LoadModule cgi_module modules&#x2F;mod_cgi.so</span><br><span class="line">#LoadModule charset_lite_module modules&#x2F;mod_charset_lite.so</span><br><span class="line">#LoadModule data_module modules&#x2F;mod_data.so</span><br><span class="line">#LoadModule dav_module modules&#x2F;mod_dav.so</span><br><span class="line">#LoadModule dav_fs_module modules&#x2F;mod_dav_fs.so</span><br><span class="line">...</span><br><span class="line"></span><br><span class="line">&lt;IfModule alias_module&gt;</span><br><span class="line">    #</span><br><span class="line">    # Redirect: Allows you to tell clients about documents that used to </span><br><span class="line">    # exist in your server&#39;s namespace, but do not anymore. The client </span><br><span class="line">    # will make a new request for the document at its new location.</span><br><span class="line">    # Example:</span><br><span class="line">    # Redirect permanent &#x2F;foo http:&#x2F;&#x2F;www.example.com&#x2F;bar</span><br><span class="line"></span><br><span class="line">    #</span><br><span class="line">    # Alias: Maps web paths into filesystem paths and is used to</span><br><span class="line">    # access content that does not live under the DocumentRoot.</span><br><span class="line">    # Example:</span><br><span class="line">    # Alias &#x2F;webpath &#x2F;full&#x2F;filesystem&#x2F;path</span><br><span class="line">    #</span><br><span class="line">    # If you include a trailing &#x2F; on &#x2F;webpath then the server will</span><br><span class="line">    # require it to be present in the URL.  You will also likely</span><br><span class="line">    # need to provide a &lt;Directory&gt; section to allow access to</span><br><span class="line">    # the filesystem path.</span><br><span class="line"></span><br><span class="line">    #</span><br><span class="line">    # ScriptAlias: This controls which directories contain server scripts. </span><br><span class="line">    # ScriptAliases are essentially the same as Aliases, except that</span><br><span class="line">    # documents in the target directory are treated as applications and</span><br><span class="line">    # run by the server when requested rather than as documents sent to the</span><br><span class="line">    # client.  The same rules about trailing &quot;&#x2F;&quot; apply to ScriptAlias</span><br><span class="line">    # directives as to Alias.</span><br><span class="line">    #</span><br><span class="line">    ScriptAlias &#x2F;cgi-bin&#x2F; &quot;F:&#x2F;WampServer&#x2F;cgi-bin&#x2F;&quot;</span><br><span class="line"></span><br><span class="line">&lt;&#x2F;IfModule&gt;</span><br><span class="line"></span><br><span class="line">&lt;IfModule cgid_module&gt;</span><br><span class="line">    #</span><br><span class="line">    # ScriptSock: On threaded servers, designate the path to the UNIX</span><br><span class="line">    # socket used to communicate with the CGI daemon of mod_cgid.</span><br><span class="line">    #</span><br><span class="line">    #Scriptsock cgisock</span><br><span class="line">&lt;&#x2F;IfModule&gt;</span><br></pre></td></tr></table></figure>
+
+<p>推荐设置：</p>
+<p>如非必要请关闭cgi扩展</p>
+<p>通过.htaccess限制可以执行的文件名</p>
+<p>（linux）限制文件权限</p>
+
+<div id="gitalk-container"></div>
+<script src="//cdn.jsdelivr.net/npm/blueimp-md5@2.18.0/js/md5.min.js"></script><link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk/dist/gitalk.css"><script src="//cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js"></script>
+
+        <script>
+        var post_title = "Web服务器CGI安全——由一次信息安全竞赛引发的思考";
+        var gitalkConfig = {"enable":true,"clientID":"c52007e74a2d1a984cf2","clientSecret":"7b7b53b4b0bb4bb59c137824b316b351d2305edc","repo":"summershrimp.github.io","owner":"summershrimp","admin":["summershrimp"],"labels":["gitalk"],"perPage":10,"pagerDirection":"last","createIssueManually":true,"distractionFreeMode":false,"proxy":"https://cors.xm1994.workers.dev/?https://github.com/login/oauth/access_token"};
+        gitalkConfig.id = md5(post_title);
+        var gitalk = new Gitalk(gitalkConfig);
+        gitalk.render("gitalk-container");
+        </script>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://www.summershrimp.com/2014/12/cgi-default-insecure/" data-id="ckm63pzaz0000npp306jrczvr" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Apache/" rel="tag">Apache</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/CGI/" rel="tag">CGI</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%AE%89%E5%85%A8/" rel="tag">安全</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%9C%8D%E5%8A%A1%E5%99%A8/" rel="tag">服务器</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2014/12/teensy-on-arduino/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          将简易的Teensy脚本刷入Arduino
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2014/12/new-start/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">New Start</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/App/">App</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/App/%E5%AE%89%E5%85%A8%E5%90%91/">安全向</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Fun/">Fun</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Fun/%E5%BC%80%E5%8F%91%E5%90%91/">开发向</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Server-Side/">Server-Side</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Server-Side/Windows-Linux/">Windows/Linux</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Web/">Web</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Web-Backend/">Web Backend</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Writeup/">Writeup</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%90%90%E5%98%88/">吐嘈</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%90%90%E5%98%88/%E6%97%A5%E5%B8%B8/">日常</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%97%A5%E5%B8%B8/">日常</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%9C%AA%E5%88%86%E7%B1%BB/">未分类</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%A4%BE%E4%BC%9A%E5%B7%A5%E7%A8%8B/">社会工程</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Apache/" rel="tag">Apache</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CGI/" rel="tag">CGI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CTF/" rel="tag">CTF</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/WriteUP/" rel="tag">WriteUP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AE%89%E5%85%A8/" rel="tag">安全</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%96%B0%E5%BC%80%E5%A7%8B/" rel="tag">新开始</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%97%A5%E5%B8%B8/" rel="tag">日常</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%9C%8D%E5%8A%A1%E5%99%A8/" rel="tag">服务器</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Apache/" style="font-size: 10px;">Apache</a> <a href="/tags/CGI/" style="font-size: 10px;">CGI</a> <a href="/tags/CTF/" style="font-size: 10px;">CTF</a> <a href="/tags/WriteUP/" style="font-size: 10px;">WriteUP</a> <a href="/tags/%E5%AE%89%E5%85%A8/" style="font-size: 10px;">安全</a> <a href="/tags/%E6%96%B0%E5%BC%80%E5%A7%8B/" style="font-size: 10px;">新开始</a> <a href="/tags/%E6%97%A5%E5%B8%B8/" style="font-size: 10px;">日常</a> <a href="/tags/%E6%9C%8D%E5%8A%A1%E5%99%A8/" style="font-size: 10px;">服务器</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">March 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">August 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">May 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">November 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2021/03/HWS2021%E5%86%B3%E8%B5%9BWriteUp/">HWS2021决赛WriteUp</a>
+          </li>
+        
+          <li>
+            <a href="/2018/08/run-multi-service-in-one-container/">如何科学的在Docker Container中运行多个服务</a>
+          </li>
+        
+          <li>
+            <a href="/2018/05/xinetd-kafel/">xinetd-kafel - 一个更安全的xinetd服务</a>
+          </li>
+        
+          <li>
+            <a href="/2017/08/xman2017-awd-babyblog-writeup/">XMan2017夏令营结业攻防赛Babyblog出题思路 &amp; WriteUP</a>
+          </li>
+        
+          <li>
+            <a href="/2016/08/appium-android-ui-test/">Appium在Android UI测试中的应用</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2021 Yibai Zhang<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>

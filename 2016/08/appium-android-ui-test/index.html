@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>Appium在Android UI测试中的应用 | 0xe799bde88f9c</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="安卓app自动化e2e测试，试试appium把！">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Appium在Android UI测试中的应用">
+<meta property="og:url" content="https://www.summershrimp.com/2016/08/appium-android-ui-test/index.html">
+<meta property="og:site_name" content="0xe799bde88f9c">
+<meta property="og:description" content="安卓app自动化e2e测试，试试appium把！">
+<meta property="og:locale">
+<meta property="og:image" content="http://cdn-qn.summershrimp.com/appium.gif">
+<meta property="og:image" content="https://www.summershrimp.com/wp-content/uploads/2016/08/Appium-android-sdk.png">
+<meta property="og:image" content="https://www.summershrimp.com/wp-content/uploads/2016/08/Appium-launch.png">
+<meta property="og:image" content="https://www.summershrimp.com/wp-content/uploads/2016/08/uiviewer.png">
+<meta property="og:image" content="https://www.summershrimp.com/wp-content/uploads/2016/08/2014100408573062.jpg">
+<meta property="article:published_time" content="2016-08-18T07:29:08.000Z">
+<meta property="article:modified_time" content="2021-03-12T09:32:07.303Z">
+<meta property="article:author" content="Yibai Zhang">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://cdn-qn.summershrimp.com/appium.gif">
+  
+    <link rel="alternate" href="/atom.xml" title="0xe799bde88f9c" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 5.2.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">0xe799bde88f9c</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://www.summershrimp.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-appium-android-ui-test" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/08/appium-android-ui-test/" class="article-date">
+  <time datetime="2016-08-18T07:29:08.000Z" itemprop="datePublished">2016-08-18</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Fun/">Fun</a>►<a class="article-category-link" href="/categories/Fun/%E5%BC%80%E5%8F%91%E5%90%91/">开发向</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Appium在Android UI测试中的应用
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>安卓app自动化e2e测试，试试appium把！</p>
+<a id="more"></a>
+
+<h2 id="Android测试工具与Appium简介"><a href="#Android测试工具与Appium简介" class="headerlink" title="Android测试工具与Appium简介"></a>Android测试工具与Appium简介</h2><p>Appium是一个C/S架构的，支持Android/iOS Native, Hybrid 和 Mobile Web Apps的测试框架，与测试程序通过Selenum Webdriver协议通讯。Webdriver的好处是通过HTTP RPC的方式调用Server上的过程，编写测试脚本不受语言的限制，无论是Python, Java, NodeJS均可以方便的编写测试。本文中将使用Python进行编程。</p>
+<p>起因是因为市场部的同事抛来如下需求：批量添加一些微信好友。直接抓取请求进行重放的方法是不靠谱的，微信与服务端的通讯均加密，Pass。考虑使用xposed等框架hook相关函数进行操作。但是xposed需要越狱，且开发复杂，Pass。后来想到了使用UI测试工具进行模拟操作，开发较为简单。</p>
+<p>Android UI测试工具有很多种，如Monkey, UIAutomator, Selendroid, Robotium等。其中UIAutomator, Monkey, Selendroid均为非侵入式的UI测试，也就是不需要修改源代码，只要安装了目标程序就可以进行测试。Robotium需要与源码一同编译测试。Appium实际上就是一个测试工具的统一调度软件，将不同的非侵入式测试工具整合在一起，对外提供统一的API。在Android 2.3以前的版本，Appium会调用Selendroid，之后的版本会直接使用UIAutomator，iOS下使用UIAutomation。Appium还支持FirefoxOS的UI测试。</p>
+<p><img src="http://cdn-qn.summershrimp.com/appium.gif" alt="Appium Gif"></p>
+<h2 id="安装Appium"><a href="#安装Appium" class="headerlink" title="安装Appium"></a>安装Appium</h2><p>官网给出了命令行下的安装方法。但实际上Appium有GUI版本，更适合在Windows/MacOS下使用。Windows下需要安装.NET Framework。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">brew install node      # get node.js</span><br><span class="line">npm install -g appium  # get appium</span><br><span class="line">npm install wd         # get appium client</span><br><span class="line">appium &amp;               # start appium</span><br><span class="line">node your-appium-test.js</span><br></pre></td></tr></table></figure>
+
+<p>Appium需要依赖Android SDK编译在手机端运行的两个插件，因此需要首先安装相应的Android SDK版本。这里直接使用了Android Studio中自带的SDK Manager。在SDKManager中选择和测试机相对应的SDK Platform和较新的Build-tools，如果需要使用模拟器测试还要装对应的ARM/x86 System Image，以及Intel HAXM Installer，用于加速x86虚拟机。Appium使用adb来与目标机器通讯，因此对于真机和模拟器操作几乎都是相同的，如何建立模拟器在此不再赘述。</p>
+<p>安装完成后需要在Appium GUI中配置Android SDK目录，随后选择Android，点击Launch就可以启动Appium Server。</p>
+<p><img src="/wp-content/uploads/2016/08/Appium-android-sdk.png"><br><img src="/wp-content/uploads/2016/08/Appium-launch.png"></p>
+<p>Appium Server默认会监听<a target="_blank" rel="noopener" href="http://localhost:4723/">http://localhost:4723</a> ，用于RPC通讯。下面我们就可以打开熟悉的编程环境，编写UI测试用例了。这里使用Python进行编写，需要先安装Appium的Python Client  ，然后再python中使用appium.webclient就可以连接Appium server了。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install Appium-Python-Client</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="使用Appium进行UI控制"><a href="#使用Appium进行UI控制" class="headerlink" title="使用Appium进行UI控制"></a>使用Appium进行UI控制</h2><p>根据注释修改相应属性后即可运行测试。手机需要打开ADB调试，执行完以下代码后，Appium会在手机上安装Appium Settings和Unlock两个程序，随后微信会被启动。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> appium <span class="keyword">import</span> webdriver</span><br><span class="line"></span><br><span class="line">desired_caps = &#123;&#125;</span><br><span class="line">desired_caps[<span class="string">&#x27;platformName&#x27;</span>] = <span class="string">&#x27;Android&#x27;</span>  <span class="comment">#测试平台</span></span><br><span class="line">desired_caps[<span class="string">&#x27;platformVersion&#x27;</span>] = <span class="string">&#x27;5.1&#x27;</span>   <span class="comment">#平台版本</span></span><br><span class="line">desired_caps[<span class="string">&#x27;deviceName&#x27;</span>] = <span class="string">&#x27;m3_note&#x27;</span>    <span class="comment">#设备名称，多设备时需区分</span></span><br><span class="line">desired_caps[<span class="string">&#x27;appPackage&#x27;</span>] = <span class="string">&#x27;com.tencent.mm&#x27;</span>  <span class="comment">#app package名</span></span><br><span class="line">desired_caps[<span class="string">&#x27;appActivity&#x27;</span>] = <span class="string">&#x27;.ui.LauncherUI&#x27;</span> <span class="comment">#app默认Activity</span></span><br><span class="line">dr = webdriver.Remote(<span class="string">&#x27;http://localhost:4723/wd/hub&#x27;</span>, desired_caps) <span class="comment">#启动Remote RPC</span></span><br></pre></td></tr></table></figure>
+
+<p>Selenum Webdriver使用了一种类似于JS中的DOM模型的方法来选择页面中的元素。dr为当前正在活动的activity对象，可以使用findElementByXXX的方法来获取Activity中的元素。所有Element后带s的函数，均获得所有匹配的元素，不带s的函数获得第一个匹配的元素。</p>
+<h3 id="查询函数"><a href="#查询函数" class="headerlink" title="查询函数"></a>查询函数</h3><h4 id="1-findElement-s-ByName"><a href="#1-findElement-s-ByName" class="headerlink" title="1. findElement(s)ByName"></a>1. findElement(s)ByName</h4><p>在Android中基本没用。Android UI没有Name这个属性。有说可以使用text值获取。但我并没有成功</p>
+<h4 id="2-findElement-s-ByClassName"><a href="#2-findElement-s-ByClassName" class="headerlink" title="2. findElement(s)ByClassName"></a>2. findElement(s)ByClassName</h4><p>通过类名来获取元素，用法如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">item_list = dr.find_elements_by_class_name(<span class="string">&quot;android.widget.LinearLayout&quot;</span>)</span><br><span class="line">item_list[<span class="number">2</span>].click()</span><br></pre></td></tr></table></figure>
+
+<h4 id="3-findElementById"><a href="#3-findElementById" class="headerlink" title="3. findElementById"></a>3. findElementById</h4><p>通过resource_id来获取元素，每个Activity中都是唯一的，用法如下</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">t = dr.find_element_by_id(<span class="string">&quot;com.tencent.mm:id/f7&quot;</span>)</span><br><span class="line">t.send_keys(wechatId)</span><br></pre></td></tr></table></figure>
+
+<h4 id="4-findElement-s-ByAccessbiltiyId"><a href="#4-findElement-s-ByAccessbiltiyId" class="headerlink" title="4. findElement(s)ByAccessbiltiyId"></a>4. findElement(s)ByAccessbiltiyId</h4><p>在Android上AccessbilityID实际就是contentDescription。这个属性是为了方便视力受损人士使用手机所设置。开启TTS后系统会朗读相关控件的contentDescription。</p>
+<h4 id="5-findElement-s-ByXPath"><a href="#5-findElement-s-ByXPath" class="headerlink" title="5. findElement(s)ByXPath"></a>5. findElement(s)ByXPath</h4><p>通过XML Path描述来寻找元素。我没有成功的获取到，可能是XPath写的有问题。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">s = dr.find_element_by_xpath(<span class="string">&quot;//android.widget.TextView[contains(@text,&#x27;搜索&#x27;)]&quot;</span>)</span><br><span class="line">s.click()</span><br></pre></td></tr></table></figure>
+
+<h4 id="6-findElementByAndroidUIAutomator"><a href="#6-findElementByAndroidUIAutomator" class="headerlink" title="6. findElementByAndroidUIAutomator"></a>6. findElementByAndroidUIAutomator</h4><p>通过UIAutomator的选择器来获取元素。因为Appium在Android上实际是调用的UIAutomator，所以可以通过UIAutomator的选择器来选择元素。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">el = dr.find_element_by_android_ui_automator(<span class="string">&quot;new UiSelector().text(\&quot;搜索\&quot;)&quot;</span>)</span><br><span class="line">el.click()</span><br></pre></td></tr></table></figure>
+
+<h3 id="操作函数"><a href="#操作函数" class="headerlink" title="操作函数"></a>操作函数</h3><p>操作函数用于操作选定的元素，有很多，以下仅列举几个，更多的请查阅手册。</p>
+<ol>
+<li>click</li>
+<li>send_keys</li>
+<li>clear</li>
+</ol>
+<p>查询函数返回的元素对象可以像JS中的dom元素一样，继续使用查询函数来选定其子元素。用例如下。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">search = dr.find_element_by_id(<span class="string">&quot;com.tencent.mm:id/aqw&quot;</span>).find_element_by_class_name(<span class="string">&quot;android.widget.RelativeLayout&quot;</span>)</span><br><span class="line">search.click()</span><br></pre></td></tr></table></figure>
+
+<h2 id="如何确定查询规则"><a href="#如何确定查询规则" class="headerlink" title="如何确定查询规则"></a>如何确定查询规则</h2><p>了解了相关的函数后，下面就应对UI进行定位了。如果是自己团队开发的程序，推荐让开发同学在所有的空间上都添加resource_id进行绝对定位。如果碰到没有谈价resource_id的元素，那就要使用别的办法进行定位了。</p>
+<h3 id="1-UI-Automator-Viewer"><a href="#1-UI-Automator-Viewer" class="headerlink" title="1. UI Automator Viewer"></a>1. UI Automator Viewer</h3><p>UI Automator Viewer是Android官方的UI定位工具，位于sdk/tools下。运行后会打开viewer界面。点击获取按钮即可获取当前正在运行的Activity的UI结构。</p>
+<p><img src="/wp-content/uploads/2016/08/uiviewer.png"></p>
+<h3 id="2-AppiumDriver-getPageSource"><a href="#2-AppiumDriver-getPageSource" class="headerlink" title="2. AppiumDriver getPageSource"></a>2. AppiumDriver getPageSource</h3><p>AppiumDriver(Client) 可以很方便的获得当前正在运行的Activity的UI描述，随后可根据返回的XML文档来寻找元素。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">print</span> dr.page_source</span><br></pre></td></tr></table></figure>
+
+<p><img src="/wp-content/uploads/2016/08/2014100408573062.jpg"></p>
+<p>(图片与他人，侵删)</p>
+<p>确定元素位置后，即可根据前述的Find方法来查找/选择元素</p>
+<h2 id="编写完整的测试代码"><a href="#编写完整的测试代码" class="headerlink" title="编写完整的测试代码"></a>编写完整的测试代码</h2><p>正确的获取元素之后便可以获取元素相关的信息，随后使用各语言常用的测试框架编写测试即可，如Java的JUnit，Nodejs的Mocha等。</p>
+<p>这里我使用Appium主要是为了模拟用户点击添加微信好友，所以完整的程序并没有使用到测试框架。相关的UI元素获取/操作方法供大家参考。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># coding:utf-8</span></span><br><span class="line"><span class="keyword">from</span> appium <span class="keyword">import</span> webdriver</span><br><span class="line"><span class="keyword">from</span> time <span class="keyword">import</span> sleep</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">addFriend</span>(<span class="params">dr, <span class="built_in">id</span>, dryRun=<span class="literal">False</span></span>):</span></span><br><span class="line">    succ = <span class="literal">False</span></span><br><span class="line">    wechatId = <span class="built_in">str</span>(<span class="built_in">id</span>)</span><br><span class="line">    dr.find_element_by_accessibility_id(<span class="string">r&quot;更多功能按钮&quot;</span>).click()</span><br><span class="line">    item_list = dr.find_elements_by_class_name(<span class="string">&quot;android.widget.LinearLayout&quot;</span>)</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        item_list[<span class="number">2</span>].click()</span><br><span class="line">    <span class="keyword">except</span>:</span><br><span class="line">        <span class="built_in">print</span> <span class="string">&quot;Error! in item list len&quot;</span></span><br><span class="line">        <span class="keyword">return</span> succ</span><br><span class="line">    el = dr.find_element_by_class_name(<span class="string">&quot;android.widget.ListView&quot;</span>)</span><br><span class="line">    item_list = el.find_elements_by_class_name(<span class="string">&quot;android.widget.LinearLayout&quot;</span>)</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        item_list[<span class="number">1</span>].click()</span><br><span class="line">    <span class="keyword">except</span>:</span><br><span class="line">        <span class="built_in">print</span> <span class="string">&quot;Error! in item list len&quot;</span></span><br><span class="line">        <span class="keyword">return</span> succ</span><br><span class="line">    t = dr.find_element_by_id(<span class="string">&quot;com.tencent.mm:id/f7&quot;</span>)</span><br><span class="line">    t.send_keys(wechatId)</span><br><span class="line">    search = dr.find_element_by_id(<span class="string">&quot;com.tencent.mm:id/aqw&quot;</span>).find_element_by_class_name(<span class="string">&quot;android.widget.RelativeLayout&quot;</span>)</span><br><span class="line">    search.click()</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        freq = dr.find_element_by_id(<span class="string">&#x27;com.tencent.mm:id/aqq&#x27;</span>)</span><br><span class="line">        <span class="keyword">assert</span> freq.text == <span class="string">u&quot;操作过于频繁，请稍后再试。&quot;</span></span><br><span class="line">        <span class="built_in">print</span> <span class="string">&quot;Frequency too high! Sleep 300s&quot;</span></span><br><span class="line">        sleep(<span class="number">60</span>)</span><br><span class="line">        <span class="keyword">return</span> succ</span><br><span class="line">    <span class="keyword">except</span>:</span><br><span class="line">        <span class="keyword">pass</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        dr.find_element_by_id(<span class="string">&#x27;com.tencent.mm:id/a8x&#x27;</span>).click()</span><br><span class="line">        addBtn = dr.find_element_by_id(<span class="string">&#x27;com.tencent.mm:id/eu&#x27;</span>)</span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> dryRun:</span><br><span class="line">            addBtn.click()</span><br><span class="line">            succ = <span class="literal">True</span></span><br><span class="line">        <span class="built_in">print</span> <span class="string">&quot;Success Send Requests:&quot;</span> + wechatId</span><br><span class="line">    <span class="keyword">except</span>:</span><br><span class="line">        <span class="built_in">print</span> <span class="string">&quot;No Such User Or Already a Friend:&quot;</span> + wechatId</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            dr.find_element_by_id(<span class="string">&#x27;com.tencent.mm:id/fb&#x27;</span>).click()</span><br><span class="line">        <span class="keyword">except</span>:</span><br><span class="line">            <span class="keyword">try</span>:</span><br><span class="line">                dr.find_element_by_id(<span class="string">&#x27;com.tencent.mm:id/f4&#x27;</span>).click()</span><br><span class="line">            <span class="keyword">except</span>:</span><br><span class="line">                <span class="keyword">break</span></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">True</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">resetActivity</span>(<span class="params">dr, desired_caps</span>):</span></span><br><span class="line">    dr.start_activity(desired_caps[<span class="string">&#x27;appPackage&#x27;</span>], desired_caps[<span class="string">&#x27;appActivity&#x27;</span>])</span><br><span class="line"></span><br><span class="line">desired_caps = &#123;&#125;</span><br><span class="line">desired_caps[<span class="string">&#x27;platformName&#x27;</span>] = <span class="string">&#x27;Android&#x27;</span></span><br><span class="line">desired_caps[<span class="string">&#x27;platformVersion&#x27;</span>] = <span class="string">&#x27;5.1&#x27;</span></span><br><span class="line">desired_caps[<span class="string">&#x27;deviceName&#x27;</span>] = <span class="string">&#x27;m3_note&#x27;</span></span><br><span class="line">desired_caps[<span class="string">&#x27;appPackage&#x27;</span>] = <span class="string">&#x27;com.tencent.mm&#x27;</span></span><br><span class="line">desired_caps[<span class="string">&#x27;appActivity&#x27;</span>] = <span class="string">&#x27;.ui.LauncherUI&#x27;</span></span><br><span class="line"><span class="built_in">print</span> <span class="string">&quot;Trying connect to phone...&quot;</span></span><br><span class="line">dr = &#123;&#125;</span><br><span class="line"><span class="keyword">try</span>:</span><br><span class="line">    dr = webdriver.Remote(<span class="string">&#x27;http://localhost:4723/wd/hub&#x27;</span>, desired_caps)</span><br><span class="line"><span class="keyword">except</span> Exception, e:</span><br><span class="line">    <span class="built_in">print</span> <span class="string">&quot;Cannot Connect to phone :&quot;</span>, e</span><br><span class="line">    exit()</span><br><span class="line"><span class="built_in">print</span> <span class="string">&quot;Successfully connect to phone.&quot;</span></span><br><span class="line"><span class="built_in">print</span> <span class="string">&quot;Reading friend list...&quot;</span></span><br><span class="line">friendList = []</span><br><span class="line">fp = <span class="built_in">open</span>(<span class="string">&quot;friends.txt&quot;</span>)</span><br><span class="line">line = fp.readline().strip()</span><br><span class="line"><span class="keyword">while</span> line:</span><br><span class="line">    friendList.append(line)</span><br><span class="line">    line = fp.readline().strip()</span><br><span class="line"><span class="built_in">print</span> <span class="string">&quot;Finish reading friends. Total: &quot;</span> + <span class="built_in">str</span>(<span class="built_in">len</span>(friendList))</span><br><span class="line"><span class="built_in">print</span> <span class="string">&quot;Wait for Wechat&#x27;s splash screen....&quot;</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">0</span>, <span class="number">10</span>):</span><br><span class="line">    <span class="built_in">print</span> <span class="number">10</span> - i</span><br><span class="line">    sleep(<span class="number">1</span>)</span><br><span class="line">succ_list = []</span><br><span class="line">fail_list = []</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> friendList:</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        succ = addFriend(dr, i, dryRun=<span class="literal">False</span>)</span><br><span class="line">        <span class="keyword">if</span> succ:</span><br><span class="line">            succ_list.append(i)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            fail_list.append(i)</span><br><span class="line">    <span class="keyword">except</span>:</span><br><span class="line">        fail_list.append(i)</span><br><span class="line">        resetActivity(dr, desired_caps)</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span> <span class="string">&quot;Succeed List:&quot;</span></span><br><span class="line"><span class="built_in">print</span> <span class="string">&quot;\n&quot;</span>.join(succ_list)</span><br><span class="line"><span class="built_in">print</span> <span class="string">&quot;Failed List:&quot;</span></span><br><span class="line"><span class="built_in">print</span> <span class="string">&quot;\n&quot;</span>.join(fail_list)</span><br><span class="line"></span><br><span class="line">dr.close()</span><br></pre></td></tr></table></figure>
+
+<div id="gitalk-container"></div>
+<script src="//cdn.jsdelivr.net/npm/blueimp-md5@2.18.0/js/md5.min.js"></script><link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk/dist/gitalk.css"><script src="//cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js"></script>
+
+        <script>
+        var post_title = "Appium在Android UI测试中的应用";
+        var gitalkConfig = {"enable":true,"clientID":"c52007e74a2d1a984cf2","clientSecret":"7b7b53b4b0bb4bb59c137824b316b351d2305edc","repo":"summershrimp.github.io","owner":"summershrimp","admin":["summershrimp"],"labels":["gitalk"],"perPage":10,"pagerDirection":"last","createIssueManually":true,"distractionFreeMode":false,"proxy":"https://cors.xm1994.workers.dev/?https://github.com/login/oauth/access_token"};
+        gitalkConfig.id = md5(post_title);
+        var gitalk = new Gitalk(gitalkConfig);
+        gitalk.render("gitalk-container");
+        </script>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://www.summershrimp.com/2016/08/appium-android-ui-test/" data-id="ckm63pzbs000knpp3e8lz5lvr" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2017/08/xman2017-awd-babyblog-writeup/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          XMan2017夏令营结业攻防赛Babyblog出题思路 &amp; WriteUP
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/04/nuaactf/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">095a655fc809cbbdffa207717a5233f5的原文是什么？</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/App/">App</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/App/%E5%AE%89%E5%85%A8%E5%90%91/">安全向</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Fun/">Fun</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Fun/%E5%BC%80%E5%8F%91%E5%90%91/">开发向</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Server-Side/">Server-Side</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Server-Side/Windows-Linux/">Windows/Linux</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Web/">Web</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Web-Backend/">Web Backend</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Writeup/">Writeup</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%90%90%E5%98%88/">吐嘈</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%90%90%E5%98%88/%E6%97%A5%E5%B8%B8/">日常</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%97%A5%E5%B8%B8/">日常</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%9C%AA%E5%88%86%E7%B1%BB/">未分类</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%A4%BE%E4%BC%9A%E5%B7%A5%E7%A8%8B/">社会工程</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Apache/" rel="tag">Apache</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CGI/" rel="tag">CGI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CTF/" rel="tag">CTF</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/WriteUP/" rel="tag">WriteUP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AE%89%E5%85%A8/" rel="tag">安全</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%96%B0%E5%BC%80%E5%A7%8B/" rel="tag">新开始</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%97%A5%E5%B8%B8/" rel="tag">日常</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%9C%8D%E5%8A%A1%E5%99%A8/" rel="tag">服务器</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Apache/" style="font-size: 10px;">Apache</a> <a href="/tags/CGI/" style="font-size: 10px;">CGI</a> <a href="/tags/CTF/" style="font-size: 10px;">CTF</a> <a href="/tags/WriteUP/" style="font-size: 10px;">WriteUP</a> <a href="/tags/%E5%AE%89%E5%85%A8/" style="font-size: 10px;">安全</a> <a href="/tags/%E6%96%B0%E5%BC%80%E5%A7%8B/" style="font-size: 10px;">新开始</a> <a href="/tags/%E6%97%A5%E5%B8%B8/" style="font-size: 10px;">日常</a> <a href="/tags/%E6%9C%8D%E5%8A%A1%E5%99%A8/" style="font-size: 10px;">服务器</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">March 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">August 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">May 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">November 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2021/03/HWS2021%E5%86%B3%E8%B5%9BWriteUp/">HWS2021决赛WriteUp</a>
+          </li>
+        
+          <li>
+            <a href="/2018/08/run-multi-service-in-one-container/">如何科学的在Docker Container中运行多个服务</a>
+          </li>
+        
+          <li>
+            <a href="/2018/05/xinetd-kafel/">xinetd-kafel - 一个更安全的xinetd服务</a>
+          </li>
+        
+          <li>
+            <a href="/2017/08/xman2017-awd-babyblog-writeup/">XMan2017夏令营结业攻防赛Babyblog出题思路 &amp; WriteUP</a>
+          </li>
+        
+          <li>
+            <a href="/2016/08/appium-android-ui-test/">Appium在Android UI测试中的应用</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2021 Yibai Zhang<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>

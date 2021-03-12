@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>HttpLuaModule在Coding WebIDE中的应用 | 0xe799bde88f9c</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="实现复杂的负载均衡逻辑，选OpenResty就对了！">
+<meta property="og:type" content="article">
+<meta property="og:title" content="HttpLuaModule在Coding WebIDE中的应用">
+<meta property="og:url" content="https://www.summershrimp.com/2015/11/httpluamodule-on-coding-webide/index.html">
+<meta property="og:site_name" content="0xe799bde88f9c">
+<meta property="og:description" content="实现复杂的负载均衡逻辑，选OpenResty就对了！">
+<meta property="og:locale">
+<meta property="article:published_time" content="2015-11-02T18:57:01.000Z">
+<meta property="article:modified_time" content="2021-03-12T09:32:07.303Z">
+<meta property="article:author" content="Yibai Zhang">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="0xe799bde88f9c" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 5.2.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">0xe799bde88f9c</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://www.summershrimp.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-HttpLuaModule在Coding WebIDE中的应用" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/11/httpluamodule-on-coding-webide/" class="article-date">
+  <time datetime="2015-11-02T18:57:01.000Z" itemprop="datePublished">2015-11-03</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Web-Backend/">Web Backend</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      HttpLuaModule在Coding WebIDE中的应用
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>实现复杂的负载均衡逻辑，选OpenResty就对了！</p>
+<a id="more"></a>
+
+<h2 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h2><p>HttpLuaModule又名<code>ngx_lua</code>，由国人大神agentzh(章奕春)开发。<code>ngx_lua</code>将lua脚本语言嵌入nginx中，并用lua封装了部分nginx的API，使nginx开发不再需要繁琐的C语言进行。目前，<code>ngx_lua</code>在阿里cdn，又拍云cdn中均发挥了极大的作用。</p>
+<p>Coding作为一个技术导向的创业公司，也在Coding WebIDE混合架构中使用了ngx_lua。</p>
+<h2 id="0x01-ngx-lua介绍"><a href="#0x01-ngx-lua介绍" class="headerlink" title="0x01 ngx_lua介绍"></a>0x01 ngx_lua介绍</h2><p>ngx_lua 通过在nginx的处理阶段中使用lua或luajit(推荐)插入lua脚本，对当前阶段的请求进行处理，使nginx具有更复杂的逻辑功能。由于lua的紧凑、快速以及内建协程，所以在保证高并发服务能力的同时极大地降低了业务逻辑实现成本。</p>
+<p>推荐阅读<a target="_blank" rel="noopener" href="http://io.upyun.com/2015/04/14/using-ngxlua-in-upyun/">浅谈 ngx_lua 在 UPYUN 的应用</a></p>
+<h2 id="0x02-应用背景"><a href="#0x02-应用背景" class="headerlink" title="0x02 应用背景"></a>0x02 应用背景</h2><p>Coding WebIDE是国内第一个基于Web的集成开发环境(IDE)，目前提供给用户一定的代码储存空间和一个完整的Ubuntu Terminal用于在线调试</p>
+<p>由于IDE在使用的过程中存在状态，因此每个用户的每个Workspace必须存放在某台固定的机器上。这就要求Balancer将用户每次分配到相同的机器上。</p>
+<p>在引入ngx_lua前，Service会在用户创建Workspace时将用户所在的机器名返回给Web UI，Web UI在每次Ajax请求的时候会带上<code>X-Space-Key</code> 和 <code>X-Sharding-Group</code>两个HTTP Header，nginx在请求中根据X-Sharding-Group的值来选择对应的Service。这里将后端的机器名暴露给了用户，带来了安全隐患。</p>
+<p>Coding WebIDE还有一个生成访问URL的功能，可将用户在Terminal中启动的Http Application暴露在公网中，供用户调试使用。</p>
+<p>在引入ngx_lua前，每次对访问URL的请求都会进入Service，由Service找到对应Container的IP，并通过<code>X-Accel-Redirect</code>的方式通知每个Service中的nginx，去返回目标Container中的服务。而在这个过程中，用户的请求会两次经过Service层的nginx，造成较大的延时。</p>
+<h2 id="0x03-ngx-lua的应用"><a href="#0x03-ngx-lua的应用" class="headerlink" title="0x03 ngx_lua的应用"></a>0x03 ngx_lua的应用</h2><h3 id="Balancing"><a href="#Balancing" class="headerlink" title="Balancing"></a>Balancing</h3><p>我们使用ngx_lua将原本需要在X-Sharding-Group头中的backend地址去掉，通过ngx_lua在数据库和缓存中检索X-Space-Key来找到对应的Service，并将upstream设为对应机器，杜绝了请求中带有Service机器名带来的隐患。同时，Redis作为缓存的加入并不会导致性能有太大的降低。</p>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> ngx.var.backend_upstream ~= <span class="string">&quot;&quot;</span> <span class="keyword">then</span></span><br><span class="line">    ngx.<span class="built_in">log</span>(ngx.ALERT, ngx.var.backend_upstream, <span class="string">&quot; From Header&quot;</span>)</span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">local</span> spaceKey = ngx.req.get_headers()[<span class="string">&#x27;X-Space-Key&#x27;</span>]</span><br><span class="line">targetGroup = <span class="built_in">config</span>.defaultGroup</span><br><span class="line">redisCli = init_redis()</span><br><span class="line">mysqlConn = init_mysql()</span><br><span class="line"><span class="keyword">if</span> spaceKey ~= <span class="literal">nil</span> <span class="keyword">then</span></span><br><span class="line">    <span class="keyword">local</span> shardingGroup, err = 在缓存中查询</span><br><span class="line">    <span class="keyword">if</span> shardingGroup ~= <span class="literal">nil</span> <span class="keyword">and</span> shardingGroup ~= ngx.null <span class="keyword">then</span></span><br><span class="line">        targetGroup = shardingGroup</span><br><span class="line">        ngx.<span class="built_in">log</span>(ngx.ALERT, shardingGroup, <span class="string">&quot; From Redis&quot;</span>)</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        res, err, errno, sqlstate = 在数据库中查询</span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> res <span class="keyword">then</span></span><br><span class="line">            ngx.<span class="built_in">log</span>(ngx.ERR, err)</span><br><span class="line">            ngx.<span class="built_in">exit</span>(<span class="number">500</span>)</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            shardingGroup = res;</span><br><span class="line">            <span class="keyword">if</span> shardingGroup ~= <span class="literal">nil</span> <span class="keyword">then</span></span><br><span class="line">                缓存数据</span><br><span class="line">                targetGroup = shardingGroup</span><br><span class="line">            <span class="keyword">end</span></span><br><span class="line">        <span class="keyword">end</span></span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">ngx.var.backend_upstream = targetGroup</span><br><span class="line">ngx.<span class="built_in">log</span>(ngx.ALERT, <span class="string">&quot;Workspace &quot;</span>, spaceKey, <span class="string">&quot; final upstream: &quot;</span>,targetGroup)</span><br><span class="line"></span><br><span class="line">close_cosock(mysqlConn)</span><br><span class="line">close_cosock(redisCli)</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="Access-URL"><a href="#Access-URL" class="headerlink" title="Access URL"></a>Access URL</h3><p>Access URL在引入ngx_lua后，性能得到了极大的提升。在用户生成了Access URL后，Service会将相关数据缓存入redis，在用户访问URL时，将由Frontend Balancer直接寻找对应container的信息，并直接要求Backend Service返回对应的请求。</p>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">redisCli = init_redis()</span><br><span class="line"></span><br><span class="line"><span class="keyword">local</span> upstream = <span class="string">&quot;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">local</span> host = ngx.req.get_headers()[<span class="string">&#x27;host&#x27;</span>]</span><br><span class="line"><span class="keyword">local</span> spaceKey, port, token = <span class="built_in">string</span>.<span class="built_in">match</span>(host, <span class="string">&quot;^([^-]+)-([^-]+)-([^.]+)[.]&quot;</span>) <span class="comment">--匹配spaceKey, port, token</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">local</span> redisKey = spaceKey..<span class="string">&quot;:&quot;</span>..port</span><br><span class="line"><span class="keyword">local</span> jsonStr, err = redisCli:get(redisKey)</span><br><span class="line"><span class="keyword">if</span> jsonStr == <span class="literal">nil</span> <span class="keyword">or</span> jsonStr == ngx.null <span class="keyword">then</span></span><br><span class="line">    ngx.<span class="built_in">log</span>(ngx.ERR, <span class="string">&quot;access a non-exist http forwarding upstream&quot;</span>)</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">    <span class="keyword">local</span> luahf = cjson.decode(jsonStr)</span><br><span class="line">    <span class="keyword">if</span> luahf.token == token <span class="keyword">and</span> luahf.ip ~= cjson.null  <span class="keyword">then</span></span><br><span class="line">        upstream = luahf.host..<span class="string">&quot;/&quot;</span>..luahf.ip..<span class="string">&quot;/&quot;</span>..port..ngx.var.request_uri</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br><span class="line">close_cosock(redisCli)</span><br><span class="line">ngx.<span class="built_in">log</span>(ngx.ALERT, <span class="string">&quot;Http forwarding upstream: &quot;</span>, upstream)</span><br><span class="line"><span class="keyword">if</span> upstream == <span class="string">&quot;&quot;</span> <span class="keyword">then</span></span><br><span class="line">    ngx.<span class="built_in">exit</span>(<span class="number">502</span>)</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">    ngx.var.upstream = upstream</span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+
+<p>原本需要nginx转发两次的请求现在只需要一次就可以到达。大大提升了用户的体验。</p>
+<h3 id="WebSocket"><a href="#WebSocket" class="headerlink" title="WebSocket"></a>WebSocket</h3><p>由于WebSocket不能自定义Header，所以使用了类似于Access URL的方法进行Balancing。Web UI在建立WebSocket时所需的握手时间也有一定的降低。</p>
+<h2 id="0x04-ngx-lua的踩坑经历"><a href="#0x04-ngx-lua的踩坑经历" class="headerlink" title="0x04 ngx_lua的踩坑经历"></a>0x04 ngx_lua的踩坑经历</h2><h3 id="cosocket在不同阶段的可用性"><a href="#cosocket在不同阶段的可用性" class="headerlink" title="cosocket在不同阶段的可用性"></a>cosocket在不同阶段的可用性</h3><p>resty.mysql和resty.redis均采用了nginx中提供的cosocket进行socket链接。但cosocket并不是在每个nginx的访问阶段都可用。在我们第一版测试的时候使用了<code>set_by_lua</code>直接对nginx变量进行赋值。但是在这个阶段只能使用<code>redis_lua</code>和<code>luasql.mysql</code>进行访问。但这两个模块使用了lua原生的socket库，并不能复用nginx的socket链接。而且由于<code>ngx_lua</code>的特殊性，无法在外部模块中使用连接池，导致链接开销过大，速度降低等问题。</p>
+<p>因此，我们将原在<code>set_by_lua</code>中执行的任务使用<code>access_by_lua</code>的方式重写，使用了复用cosocket的openresty系列库。</p>
+<h3 id="sql和redis的连接池"><a href="#sql和redis的连接池" class="headerlink" title="sql和redis的连接池"></a>sql和redis的连接池</h3><p>由于ngx_lua的特殊性，无法使用传统意义上的连接池。但是openresty提供了基于cosocket的连接池，可以减少每次重连造成的开销。</p>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">close_cosock</span><span class="params">(cosock)</span></span></span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> cosock <span class="keyword">then</span></span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line">    <span class="keyword">local</span> ok, err = cosock:set_keepalive(<span class="built_in">config</span>.pool.idle_time, <span class="built_in">config</span>.pool.size)</span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> ok <span class="keyword">then</span></span><br><span class="line">        ngx.say(<span class="string">&quot;set keepalive error : &quot;</span>, err)</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+
+<p>使用如上代码关闭<code>resty.redis</code>和<code>resty.mysql</code>的链接便可将cosocket链接放入连接池，等待下次connect。</p>
+<h3 id="生产和开发环境不一致"><a href="#生产和开发环境不一致" class="headerlink" title="生产和开发环境不一致"></a>生产和开发环境不一致</h3><p>根据官方文档，生产环境需要打开lua_code_cache。但是开发环境可以不打开lua_code_cache。当不打开code cache时，每次请求都会重新加载lua文件，这使得lua文件可以获得及时的更新。</p>
+<p>在我们的测试中，当生产环境打开code cache后，部分</p>
+<h3 id="0x05-总结"><a href="#0x05-总结" class="headerlink" title="0x05 总结"></a>0x05 总结</h3><p>综上，集成lua的nginx可以完成很多之前需要在Backend Service中完成的功能，可以减少不同模块之间的耦合度，还能一定程度上提升应用性能。</p>
+<p>lua的开发周期和成本也比用C开发nginx模块要低得多，便于快速上线和迭代开发。因此，不妨尝试将部分业务放入ngx_lua中完成。</p>
+
+<div id="gitalk-container"></div>
+<script src="//cdn.jsdelivr.net/npm/blueimp-md5@2.18.0/js/md5.min.js"></script><link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk/dist/gitalk.css"><script src="//cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js"></script>
+
+        <script>
+        var post_title = "HttpLuaModule在Coding WebIDE中的应用";
+        var gitalkConfig = {"enable":true,"clientID":"c52007e74a2d1a984cf2","clientSecret":"7b7b53b4b0bb4bb59c137824b316b351d2305edc","repo":"summershrimp.github.io","owner":"summershrimp","admin":["summershrimp"],"labels":["gitalk"],"perPage":10,"pagerDirection":"last","createIssueManually":true,"distractionFreeMode":false,"proxy":"https://cors.xm1994.workers.dev/?https://github.com/login/oauth/access_token"};
+        gitalkConfig.id = md5(post_title);
+        var gitalk = new Gitalk(gitalkConfig);
+        gitalk.render("gitalk-container");
+        </script>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://www.summershrimp.com/2015/11/httpluamodule-on-coding-webide/" data-id="ckm63pzbl000enpp3ajrb98he" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2015/11/migrate-and-enable-https/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          博客全面迁移并启用https链接
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2015/04/swap-quicker-assign-or-xor/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">交换两数位运算快还是赋值快？</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/App/">App</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/App/%E5%AE%89%E5%85%A8%E5%90%91/">安全向</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Fun/">Fun</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Fun/%E5%BC%80%E5%8F%91%E5%90%91/">开发向</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Server-Side/">Server-Side</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Server-Side/Windows-Linux/">Windows/Linux</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Web/">Web</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Web-Backend/">Web Backend</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Writeup/">Writeup</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%90%90%E5%98%88/">吐嘈</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%90%90%E5%98%88/%E6%97%A5%E5%B8%B8/">日常</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%97%A5%E5%B8%B8/">日常</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%9C%AA%E5%88%86%E7%B1%BB/">未分类</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%A4%BE%E4%BC%9A%E5%B7%A5%E7%A8%8B/">社会工程</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Apache/" rel="tag">Apache</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CGI/" rel="tag">CGI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CTF/" rel="tag">CTF</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/WriteUP/" rel="tag">WriteUP</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AE%89%E5%85%A8/" rel="tag">安全</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%96%B0%E5%BC%80%E5%A7%8B/" rel="tag">新开始</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%97%A5%E5%B8%B8/" rel="tag">日常</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%9C%8D%E5%8A%A1%E5%99%A8/" rel="tag">服务器</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Apache/" style="font-size: 10px;">Apache</a> <a href="/tags/CGI/" style="font-size: 10px;">CGI</a> <a href="/tags/CTF/" style="font-size: 10px;">CTF</a> <a href="/tags/WriteUP/" style="font-size: 10px;">WriteUP</a> <a href="/tags/%E5%AE%89%E5%85%A8/" style="font-size: 10px;">安全</a> <a href="/tags/%E6%96%B0%E5%BC%80%E5%A7%8B/" style="font-size: 10px;">新开始</a> <a href="/tags/%E6%97%A5%E5%B8%B8/" style="font-size: 10px;">日常</a> <a href="/tags/%E6%9C%8D%E5%8A%A1%E5%99%A8/" style="font-size: 10px;">服务器</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">March 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">August 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">May 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">November 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">February 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2021/03/HWS2021%E5%86%B3%E8%B5%9BWriteUp/">HWS2021决赛WriteUp</a>
+          </li>
+        
+          <li>
+            <a href="/2018/08/run-multi-service-in-one-container/">如何科学的在Docker Container中运行多个服务</a>
+          </li>
+        
+          <li>
+            <a href="/2018/05/xinetd-kafel/">xinetd-kafel - 一个更安全的xinetd服务</a>
+          </li>
+        
+          <li>
+            <a href="/2017/08/xman2017-awd-babyblog-writeup/">XMan2017夏令营结业攻防赛Babyblog出题思路 &amp; WriteUP</a>
+          </li>
+        
+          <li>
+            <a href="/2016/08/appium-android-ui-test/">Appium在Android UI测试中的应用</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2021 Yibai Zhang<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>
